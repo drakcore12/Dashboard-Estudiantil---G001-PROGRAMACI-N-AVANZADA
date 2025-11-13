@@ -63,15 +63,39 @@ def df_to_excel_bytes(df):
 # =====================
 df.columns = [col.strip() for col in df.columns]
 
-df["Fecha_Nacimiento"] = pd.to_datetime(df["Fecha_Nacimiento"], errors="coerce")
+# Fecha de nacimiento → datetime y Edad
+if "Fecha_Nacimiento" in df.columns:
+    df["Fecha_Nacimiento"] = pd.to_datetime(df["Fecha_Nacimiento"], errors="coerce")
+    df["Edad"] = df["Fecha_Nacimiento"].apply(calcular_edad)
+else:
+    df["Edad"] = np.nan
 
-df["Edad"] = df["Fecha_Nacimiento"].apply(calcular_edad)
+# Conversión robusta de Estatura y Peso a numérico
+# Soporta valores tipo "1,75" o "70,5"
+df["Estatura"] = (
+    df["Estatura"]
+    .astype(str)
+    .str.replace(",", ".", regex=False)
+)
+df["Peso"] = (
+    df["Peso"]
+    .astype(str)
+    .str.replace(",", ".", regex=False)
+)
 
+df["Estatura"] = pd.to_numeric(df["Estatura"], errors="coerce")
+df["Peso"] = pd.to_numeric(df["Peso"], errors="coerce")
+
+# Estatura a cm (si viene en metros)
 df["Estatura_cm"] = df["Estatura"] * 100
 
-df["IMC"] = df["Peso"] / ((df["Estatura_cm"] / 100) ** 2)
+# IMC = Peso / (Estatura en metros)^2
+est_m = df["Estatura_cm"] / 100
+df["IMC"] = df["Peso"] / (est_m ** 2)
+
 df["Clasificación_IMC"] = df["IMC"].apply(clasificar_imc)
 
+# Nombre completo (por si lo necesitas en filtros)
 if "Nombre_Estudiante" in df.columns and "Apellido_Estudiante" in df.columns:
     df["Nombre_Completo"] = (
         df["Nombre_Estudiante"].astype(str).str.strip() + " " +
@@ -80,11 +104,6 @@ if "Nombre_Estudiante" in df.columns and "Apellido_Estudiante" in df.columns:
 else:
     df["Nombre_Completo"] = np.nan
 
-st.subheader("Archivo con columnas calculadas")
-st.dataframe(df, use_container_width=True)
-
-st.markdown("---")
-st.subheader("Filtros")
 
 # =====================
 # FILTROS MULTISELECT
