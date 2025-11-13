@@ -1,6 +1,4 @@
-
 # app.py
-import os
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -14,16 +12,19 @@ st.set_page_config(page_title="Dashboard Estudiantil", layout="wide")
 
 st.title("Dashboard Estudiantil - G001 PROGRAMACIÓN AVANZADA")
 st.subheader("Hecho por: ALEX DANIEL, MIGUEL ANGEL, JHOAN SEBASTIÁN, JULIAN, FRAY DURNEY")
-st.subheader("Cargar datos de estudiantes")
+st.subheader("Datos de estudiantes")
 
-DEFAULT_PATH = "listadoEstudiantes.xlsx"
+# =====================
+# CARGA DE DATOS DESDE GOOGLE SHEETS
+# =====================
+SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/1x2-9xFM30Nfg9aX0gcsGp8pOgQsoRqmcAjY474oP6JU/export?format=csv"
 
-if not os.path.exists(DEFAULT_PATH):
-    st.error("No se encontró el archivo de datos en Drive. Verifica la ruta DEFAULT_PATH.")
+try:
+    df = pd.read_csv(SHEET_CSV_URL)
+    st.caption("Fuente de datos: Google Sheets (vínculo compartido)")
+except Exception as e:
+    st.error(f"No se pudieron cargar los datos desde Google Sheets.\nDetalle: {e}")
     st.stop()
-
-df = pd.read_excel(DEFAULT_PATH)
-st.caption(f"Fuente de datos: {DEFAULT_PATH}")
 
 # =====================
 # FUNCIONES AUXILIARES
