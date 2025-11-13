@@ -16,7 +16,7 @@ st.title("Dashboard Estudiantil - G001 PROGRAMACIÓN AVANZADA")
 st.subheader("Hecho por: ALEX DANIEL, MIGUEL ANGEL, JHOAN SEBASTIÁN, JULIAN, FRAY DURNEY")
 st.subheader("Cargar datos de estudiantes")
 
-DEFAULT_PATH = "/content/drive/My Drive/Data/listadoEstudiantes.xlsx"
+DEFAULT_PATH = "listadoEstudiantes.xlsx"
 
 if not os.path.exists(DEFAULT_PATH):
     st.error("No se encontró el archivo de datos en Drive. Verifica la ruta DEFAULT_PATH.")
